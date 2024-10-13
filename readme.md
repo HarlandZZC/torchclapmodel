@@ -1,3 +1,3 @@
-# Clap
+# Clapmodel
 
-This is a torch-compatible port of clap.
+This is a torch-compatible port of clapmodel.
