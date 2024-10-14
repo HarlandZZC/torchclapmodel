@@ -17,12 +17,16 @@ def clapmodel(weights_name, device):
             '630k-audioset-fusion-best.pt'}
     
     def load_state_dict_from_url(url: str, map_location="cpu", skip_params=True, progress=True):
-        state_dict = torch.hub.load_state_dict_from_url(url, progress=progress, map_location=map_location)
+        checkpoint = torch.hub.load_state_dict_from_url(url, progress=progress, map_location=map_location)
+        if isinstance(checkpoint, dict) and "state_dict" in checkpoint:
+            state_dict = checkpoint["state_dict"]
+        else:
+            state_dict = checkpoint
         if skip_params:
             if next(iter(state_dict.items()))[0].startswith("module"):
                 state_dict = {k[7:]: v for k, v in state_dict.items()}
-            if version.parse(transformers.__version__) >= version.parse("4.31.0"):
-                state_dict.pop("text_branch.embeddings.position_ids", None)
+        if version.parse(transformers.__version__) >= version.parse("4.31.0"): 
+            del state_dict["text_branch.embeddings.position_ids"]
         return state_dict
     
     if weights_name == "music_speech_audioset_epoch_15_esc_89.98":
@@ -39,7 +43,7 @@ def clapmodel(weights_name, device):
         pkg = load_state_dict_from_url(model_urls['630k-audioset-fusion-best'], progress=True)
     else:
         raise ValueError('clap_model not implemented')
-    
+
     pkg.pop('text_branch.embeddings.position_ids', None)
     model.model.load_state_dict(pkg)
 
