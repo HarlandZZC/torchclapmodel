@@ -2,7 +2,7 @@ dependencies = ['torch', 'numpy', 'resampy', 'soundfile']
 
 import laion_clap
 import torch
-import version
+from packaging import version
 import transformers
 
 def clapmodel(weights_name, device):
